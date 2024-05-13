@@ -1,4 +1,4 @@
-use anyhow::{Result};
+use anyhow::Result;
 use aws_lambda_events::apigw::ApiGatewayWebsocketProxyRequest;
 use lambda_runtime::tracing::Level;
 use lambda_runtime::{service_fn, Error, LambdaEvent};
