@@ -35,7 +35,7 @@ pub async fn verify_claims(token: &str) -> Result<Claims> {
         None => bail!("none of the keys match token kid"),
     };
 
-    info!("found appropriate key: {:?}", key);
+    info!(key = debug(key), "found appropriate key");
 
     let mut validation = Validation::new(Algorithm::RS256);
     let audience = &get_config().audience;
@@ -50,7 +50,7 @@ pub async fn verify_claims(token: &str) -> Result<Claims> {
     Ok(token_data.claims)
 }
 
-pub async fn keys() -> Result<&'static Vec<Jwk>> {
+async fn keys() -> Result<&'static Vec<Jwk>> {
     CACHED_KEYS.get_or_try_init(fetch_keys).await
 }
 

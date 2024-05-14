@@ -2,7 +2,6 @@ mod auth;
 mod config;
 mod decode;
 
-use anyhow::anyhow;
 use aws_lambda_events::apigw::{
     ApiGatewayV2CustomAuthorizerIamPolicyResponse, ApiGatewayWebsocketProxyRequest,
 };
@@ -10,7 +9,7 @@ use lambda_runtime::tracing::Level;
 use lambda_runtime::{service_fn, Error, LambdaEvent};
 use tracing::error;
 
-use crate::auth::{authorise, Context};
+use crate::auth::{authorise, generate_deny_response, Context};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -27,11 +26,13 @@ async fn func(
     event: LambdaEvent<ApiGatewayWebsocketProxyRequest>,
 ) -> Result<ApiGatewayV2CustomAuthorizerIamPolicyResponse<Context>, Error> {
     let (event, _context) = event.into_parts();
-    match event.query_string_parameters.first("auth") {
+    let response = match event.query_string_parameters.first("auth") {
         None => {
             error!("missing auth token in connection request");
-            Err(anyhow!("missing auth token").into())
+            generate_deny_response()
         }
-        Some(token) => Ok(authorise(token).await),
-    }
+        Some(token) => authorise(token).await,
+    };
+
+    Ok(response)
 }

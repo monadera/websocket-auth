@@ -89,17 +89,9 @@ export class WebSocketAPIStack extends cdk.Stack {
     binName,
     environmentVariables,
   }: RustFunctionProps) {
-    child.exec(
-      "cargo lambda build -p authoriser --release --arm64",
-      { cwd: "../" },
-      function (error, stdout, stderr) {
-        console.log(stdout);
-        console.error(stderr);
-        if (error) {
-          throw error;
-        }
-      }
-    );
+    child.execSync("cargo lambda build -p authoriser --release --arm64", {
+      cwd: "../",
+    });
     const code = Code.fromAsset(
       path.join(__dirname, "..", "..", "target/lambda/", binName)
     );

@@ -27,17 +27,20 @@ pub async fn authorise(token: &str) -> ApiGatewayV2CustomAuthorizerIamPolicyResp
         }
         Err(err) => {
             error!(error = debug(err), "failed to authenticate connection");
-
-            let context = Context {
-                username: "".to_string(),
-            };
-
-            ApiGatewayV2CustomAuthorizerIamPolicyResponse {
-                principal_id: None,
-                policy_document: generate_policy(IamPolicyEffect::Deny),
-                context,
-            }
+            generate_deny_response()
         }
+    }
+}
+
+pub fn generate_deny_response() -> ApiGatewayV2CustomAuthorizerIamPolicyResponse<Context> {
+    let context = Context {
+        username: "".to_string(),
+    };
+
+    ApiGatewayV2CustomAuthorizerIamPolicyResponse {
+        principal_id: None,
+        policy_document: generate_policy(IamPolicyEffect::Deny),
+        context,
     }
 }
 
