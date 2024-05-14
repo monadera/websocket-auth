@@ -21,9 +21,7 @@ struct Response {
     status_code: i32,
 }
 
-async fn func(
-    event: LambdaEvent<ApiGatewayWebsocketProxyRequest>,
-) -> Result<Response, Error> {
+async fn func(event: LambdaEvent<ApiGatewayWebsocketProxyRequest>) -> Result<Response, Error> {
     let (event, _context) = event.into_parts();
     info!(event = debug(event), "handling event");
 

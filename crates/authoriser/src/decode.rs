@@ -1,10 +1,11 @@
-use crate::config::get_config;
 use anyhow::{bail, Result};
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use serde::Deserialize;
 use serde_json::Value;
 use tokio::sync::OnceCell;
 use tracing::info;
+
+use crate::config::get_config;
 
 static CACHED_KEYS: OnceCell<Vec<Jwk>> = OnceCell::const_new();
 

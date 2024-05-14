@@ -32,14 +32,6 @@ async fn func(
             error!("missing auth token in connection request");
             Err(anyhow!("missing auth token").into())
         }
-        Some(token) => {
-            let response = authorise(token).await.map_err(|err| {
-                // TODO: expired tokens should return 401 rather than 500
-                let error_message = err.to_string();
-                error!(error_message, "failed to authenticate connection");
-                err
-            })?;
-            Ok(response)
-        }
+        Some(token) => Ok(authorise(token).await),
     }
 }
