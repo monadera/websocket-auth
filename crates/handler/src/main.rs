@@ -1,4 +1,3 @@
-use anyhow::Result;
 use aws_lambda_events::apigw::ApiGatewayWebsocketProxyRequest;
 use lambda_runtime::tracing::Level;
 use lambda_runtime::{service_fn, Error, LambdaEvent};
@@ -24,7 +23,7 @@ struct Response {
 
 async fn func(
     event: LambdaEvent<ApiGatewayWebsocketProxyRequest>,
-) -> std::result::Result<Response, Error> {
+) -> Result<Response, Error> {
     let (event, _context) = event.into_parts();
     info!(event = debug(event), "handling event");
 
