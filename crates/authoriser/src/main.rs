@@ -1,4 +1,5 @@
 mod auth;
+mod config;
 mod decode;
 
 use anyhow::anyhow;

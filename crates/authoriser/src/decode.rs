@@ -1,3 +1,4 @@
+use crate::config::get_config;
 use anyhow::{bail, Result};
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use serde::Deserialize;
@@ -36,7 +37,7 @@ pub async fn verify_claims(token: &str) -> Result<Claims> {
     info!("found appropriate key: {:?}", key);
 
     let mut validation = Validation::new(Algorithm::RS256);
-    let audience = std::env::var("AUDIENCE")?;
+    let audience = &get_config().audience;
     validation.set_audience(&[audience]);
 
     let token_data = decode::<Claims>(
@@ -53,10 +54,9 @@ pub async fn keys() -> Result<&'static Vec<Jwk>> {
 }
 
 async fn fetch_keys() -> Result<Vec<Jwk>> {
-    info!("fetching jwk");
+    let url = &get_config().jwks_url;
+    info!(url, "fetching jwks");
     let client = reqwest::Client::builder().use_rustls_tls().build()?;
-
-    let url = std::env::var("JWKS_URL")?;
     let res = client.get(url).send().await?;
 
     let jwk_text = res.text().await?;

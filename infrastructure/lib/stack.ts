@@ -1,5 +1,5 @@
 import * as cdk from "aws-cdk-lib";
-import {CfnOutput, Stack} from "aws-cdk-lib";
+import { CfnOutput, Stack } from "aws-cdk-lib";
 import { WebSocketApi, WebSocketStage } from "aws-cdk-lib/aws-apigatewayv2";
 import { WebSocketLambdaAuthorizer } from "aws-cdk-lib/aws-apigatewayv2-authorizers";
 import { WebSocketLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
@@ -11,6 +11,7 @@ import {
   Runtime,
 } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
+import * as child from "node:child_process";
 import * as path from "node:path";
 
 import { getConfig } from "./config";
@@ -88,6 +89,17 @@ export class WebSocketAPIStack extends cdk.Stack {
     binName,
     environmentVariables,
   }: RustFunctionProps) {
+    child.exec(
+      "cargo lambda build -p authoriser --release --arm64",
+      { cwd: "../" },
+      function (error, stdout, stderr) {
+        console.log(stdout);
+        console.error(stderr);
+        if (error) {
+          throw error;
+        }
+      }
+    );
     const code = Code.fromAsset(
       path.join(__dirname, "..", "..", "target/lambda/", binName)
     );
